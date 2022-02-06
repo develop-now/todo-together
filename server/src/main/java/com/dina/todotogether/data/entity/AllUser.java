@@ -32,7 +32,7 @@ public class AllUser {
     @ManyToMany(fetch = EAGER)
     @JoinTable(name = "userRole",
             joinColumns = @JoinColumn(name="uId"),
-            inverseJoinColumns = @JoinColumn(name="roleId")
+            inverseJoinColumns = @JoinColumn(name="rId")
     )
     private Collection<Role> roles = new ArrayList<>();
 
