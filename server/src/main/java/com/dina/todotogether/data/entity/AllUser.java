@@ -1,9 +1,6 @@
 package com.dina.todotogether.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,7 +11,6 @@ import static javax.persistence.FetchType.EAGER;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @Table(name = "user")
 @Entity
 public class AllUser {
@@ -36,4 +32,9 @@ public class AllUser {
     )
     private Collection<Role> roles = new ArrayList<>();
 
+    @Builder
+    public AllUser(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

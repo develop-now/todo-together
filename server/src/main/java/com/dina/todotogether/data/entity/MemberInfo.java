@@ -1,9 +1,6 @@
 package com.dina.todotogether.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -11,7 +8,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @Entity
 public class MemberInfo extends BaseTimeEntity {
 
@@ -44,6 +40,19 @@ public class MemberInfo extends BaseTimeEntity {
     private int rpCount;
 
     @Column(length = 30)
-    private String profile;
+    private String originalProfile;
 
+    @Column(length = 60)
+    private String storedProfile;
+
+    @Builder
+    public MemberInfo(AllUser allUser, String nickname, String name, String phone, String backupEmail, String originalProfile, String storedProfile ) {
+        this.allUser = allUser;
+        this.nickname = nickname;
+        this.name = name;
+        this.phone = phone;
+        this.backupEmail = backupEmail;
+        this.originalProfile = originalProfile;
+        this.storedProfile = storedProfile;
+    }
 }
