@@ -8,6 +8,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 @Entity
 public class MemberInfo extends BaseTimeEntity {
 
@@ -45,14 +46,4 @@ public class MemberInfo extends BaseTimeEntity {
     @Column(length = 60)
     private String storedProfile;
 
-    @Builder
-    public MemberInfo(AllUser allUser, String nickname, String name, String phone, String backupEmail, String originalProfile, String storedProfile ) {
-        this.allUser = allUser;
-        this.nickname = nickname;
-        this.name = name;
-        this.phone = phone;
-        this.backupEmail = backupEmail;
-        this.originalProfile = originalProfile;
-        this.storedProfile = storedProfile;
-    }
 }
