@@ -1,13 +1,17 @@
 package com.dina.todotogether.data.entity;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import static javax.persistence.FetchType.EAGER;
 
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

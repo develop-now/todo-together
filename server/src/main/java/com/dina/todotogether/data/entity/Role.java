@@ -1,9 +1,6 @@
 package com.dina.todotogether.data.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -19,6 +16,7 @@ public class Role {
     private Long rId;
 
     @Column(nullable = false, length = 20)
-    private String rName;
+    @Enumerated(EnumType.STRING)
+    private RoleType rName;
 
 }
