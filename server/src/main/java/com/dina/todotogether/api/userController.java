@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 public class userController {
@@ -17,7 +19,7 @@ public class userController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/signUp")
-    public void signUp (MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo) {
+    public void signUp (@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) {
         userServiceImpl.signUp(member, memberInfo);
     }
 }

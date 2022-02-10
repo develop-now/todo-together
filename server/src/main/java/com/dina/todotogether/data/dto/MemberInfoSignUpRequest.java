@@ -5,13 +5,23 @@ import com.dina.todotogether.data.entity.MemberInfo;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 public class MemberInfoSignUpRequest {
 
+    @NotBlank
     private String nickname;
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String phone;
+
+    @NotBlank
     private String backupEmail;
+
     private String originalProfile;
     private String storedProfile;
     private MultipartFile uploadProfile;
