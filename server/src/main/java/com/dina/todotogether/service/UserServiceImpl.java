@@ -47,7 +47,6 @@ public class UserServiceImpl implements UserService{
         AllUser entityUser = member.toEntity();
         AllUser saveMember = userRepo.save(entityUser);
 
-        saveMember.getUId();
         MemberInfo entityMemberInfo = memberInfo.toEntity(entityUser);
         MemberInfo saveMemberInfo = memberInfoRepo.save(entityMemberInfo);
     }
