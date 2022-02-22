@@ -9,34 +9,54 @@ import com.dina.todotogether.data.entity.RoleType;
 import com.dina.todotogether.repo.MemberInfoRepo;
 import com.dina.todotogether.repo.RoleRepo;
 import com.dina.todotogether.repo.UserRepo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Transactional
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService, UserDetailsService {
+
     private final UserRepo userRepo;
     private final MemberInfoRepo memberInfoRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepo userRepo, MemberInfoRepo memberInfoRepo, RoleRepo roleRepo, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.memberInfoRepo = memberInfoRepo;
-        this.roleRepo = roleRepo;
-        this.passwordEncoder = passwordEncoder;
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        AllUser user = userRepo.findByEmail(email);
+
+        if(user == null) {
+            log.error("email이 일치하는 user가 DB에 존재하지 않습니다.");
+            throw new UsernameNotFoundException("email이 일치하는 user가 DB에 존재하지 않습니다.");
+        }else {
+            log.info("DB에서 조회된 member email : {}", email);
+        }
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getRName().toString()));
+        });
+
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 
     @Override
-    public void signUp(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo) {
+    public void register(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo) {
 
         member.setPassword(passwordEncoder.encode(member.getPassword()));
 
@@ -55,4 +75,11 @@ public class UserServiceImpl implements UserService{
     public Role saveRole(Role role) {
         return roleRepo.save(role);
     }
+
+    @Override
+    public AllUser getUser(String email) {
+        log.info("Fetching User : {}", email);
+        return userRepo.findByEmail(email);
+    }
+
 }
