@@ -38,18 +38,8 @@ public class UserController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-    @Autowired
-    private S3Service s3Service;
-
-
     @PostMapping("/register")
     public void register (@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) throws Exception {
-        MultipartFile uploadProfile = memberInfo.getUploadProfile();
-
-        if(uploadProfile != null) {
-            s3Service.UploadFile(uploadProfile);
-            memberInfo.setOriginalProfile(uploadProfile.getOriginalFilename());
-        }
         userServiceImpl.register(member, memberInfo);
     }
 

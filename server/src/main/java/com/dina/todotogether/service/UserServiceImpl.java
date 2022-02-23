@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final MemberInfoRepo memberInfoRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -67,8 +69,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         AllUser entityUser = member.toEntity();
         AllUser saveMember = userRepo.save(entityUser);
 
+        MultipartFile uploadProfile = memberInfo.getUploadProfile();
+        if(uploadProfile != null) {
+            try {
+                s3Service.UploadFile(uploadProfile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            memberInfo.setOriginalProfile(uploadProfile.getOriginalFilename());
+        }
         MemberInfo entityMemberInfo = memberInfo.toEntity(entityUser);
         MemberInfo saveMemberInfo = memberInfoRepo.save(entityMemberInfo);
+
+
     }
 
     @Override
