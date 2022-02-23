@@ -33,7 +33,7 @@ public class S3Service {
             }
         }catch (IOException e) {
             e.printStackTrace();
-            throw new Exception(" 파일 업로드 중 에러 발생");
+            throw new Exception("파일 업로드 중 에러 발생");
         }
     }
 }
