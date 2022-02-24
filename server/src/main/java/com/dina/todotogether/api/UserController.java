@@ -13,6 +13,7 @@ import com.dina.todotogether.service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -45,15 +46,13 @@ public class UserController {
     }
 
     @GetMapping("/register/check-email")
-    public void checkEmail (@RequestParam(value="email")String email) {
-        int result = 1;
-        if(email == null) {
+    public ResponseEntity<Boolean> checkEmail (@RequestParam(value="email")String email) {
 
-        }
         AllUser checkedEmail = userServiceImpl.getUser(email);
         if(checkedEmail != null) {
-            result = 0;
-            log.info("사용 불가능 한 email입니다. 입력한 email{}", email);
+            return ResponseEntity.status(CONFLICT).body(false);
+        } else {
+            return ResponseEntity.status(OK).body(true);
         }
     }
 
