@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,19 @@ public class UserController {
     @PostMapping("/register")
     public void register (@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) throws Exception {
         userServiceImpl.register(member, memberInfo);
+    }
+
+    @GetMapping("/register/check-email")
+    public void checkEmail (@RequestParam(value="email")String email) {
+        int result = 1;
+        if(email == null) {
+
+        }
+        AllUser checkedEmail = userServiceImpl.getUser(email);
+        if(checkedEmail != null) {
+            result = 0;
+            log.info("사용 불가능 한 email입니다. 입력한 email{}", email);
+        }
     }
 
     @GetMapping("/token/refresh")
