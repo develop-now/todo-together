@@ -45,13 +45,10 @@ public class UserController {
 
     @PostMapping("/register/overlapping-check")
     public ResponseEntity overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
-            Boolean result = userServiceImpl.overlappingCheck(memberInfo);
-            log.info("result:{}", result);
 
-        if(result != true) {
-            ResponseEntity.status(OK).body("사용가능");
-        }
-        return ResponseEntity.status(CONFLICT).body("사용불가");
+            Boolean result = userServiceImpl.overlappingCheck(memberInfo);
+
+        return (result==false)?ResponseEntity.status(CONFLICT).body("사용불가"):ResponseEntity.status(OK).body("사용가능");
     }
 
     @GetMapping("/token/refresh")

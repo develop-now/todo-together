@@ -2,6 +2,7 @@ package com.dina.todotogether.service;
 
 import com.dina.todotogether.data.dto.MemberInfoSignUpRequest;
 import com.dina.todotogether.data.dto.MemberSignUpRequest;
+import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.MemberInfo;
 import com.dina.todotogether.data.entity.Role;
@@ -81,7 +82,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         MemberInfo entityMemberInfo = memberInfo.toEntity(entityUser);
         MemberInfo saveMemberInfo = memberInfoRepo.save(entityMemberInfo);
 
+    }
 
+    @Override
+    public Boolean overlappingCheck(ResisterValidationRequest memberInfoCheck) {
+
+        String email = memberInfoCheck.getEmail();
+        String nickname = memberInfoCheck.getNickname();
+        if(email != null) {
+            AllUser emailCheck = userRepo.findByEmail(email);
+            return emailCheck == null;
+        }
+        if(nickname != null) {
+            MemberInfo nicknameCheck = memberInfoRepo.findByNickname(nickname);
+            return nicknameCheck == null;
+        }
+        return true;
     }
 
     @Override
