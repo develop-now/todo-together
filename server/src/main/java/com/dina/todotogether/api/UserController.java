@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.dina.todotogether.data.dto.MemberInfoSignUpRequest;
 import com.dina.todotogether.data.dto.MemberSignUpRequest;
+import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.Role;
 import com.dina.todotogether.service.S3Service;
@@ -14,10 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,15 +43,15 @@ public class UserController {
         userServiceImpl.register(member, memberInfo);
     }
 
-    @GetMapping("/register/check-email")
-    public ResponseEntity<Boolean> checkEmail (@RequestParam(value="email")String email) {
+    @PostMapping("/register/overlapping-check")
+    public ResponseEntity overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
+            Boolean result = userServiceImpl.overlappingCheck(memberInfo);
+            log.info("result:{}", result);
 
-        AllUser checkedEmail = userServiceImpl.getUser(email);
-        if(checkedEmail != null) {
-            return ResponseEntity.status(CONFLICT).body(false);
-        } else {
-            return ResponseEntity.status(OK).body(true);
+        if(result != true) {
+            ResponseEntity.status(OK).body("사용가능");
         }
+        return ResponseEntity.status(CONFLICT).body("사용불가");
     }
 
     @GetMapping("/token/refresh")
