@@ -2,6 +2,7 @@ package com.dina.todotogether.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,10 @@ public class S3Service {
 
         String uploadFilePath = folderPath + "/" + uploadFilename;
         try {
-                PutObjectResult saveFilePath = s3Client.putObject(new PutObjectRequest(bucket, uploadFilePath, mf.getInputStream(), null)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(mf.getSize());
+            PutObjectResult saveFilePath = s3Client.putObject(new PutObjectRequest(bucket, uploadFilePath, mf.getInputStream(), metadata)
+                                                    .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             e.printStackTrace();
             throw new Exception("파일 업로드 중 에러 발생");
