@@ -43,7 +43,7 @@ public class MemberInfo extends BaseTimeEntity {
     @Column(length = 30)
     private String originalProfile;
 
-    @Column(length = 60)
+    @Column(length = 100)
     private String storedProfile;
 
 }

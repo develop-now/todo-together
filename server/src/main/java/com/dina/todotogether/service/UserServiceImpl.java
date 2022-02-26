@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -72,8 +74,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         MultipartFile uploadProfile = memberInfo.getUploadProfile();
         if(uploadProfile != null) {
+            String folder = "image";
+
             try {
-                s3Service.UploadFile(uploadProfile);
+                String saveFilePath = s3Service.UploadFile(uploadProfile, folder);
+                memberInfo.setStoredProfile(saveFilePath);
             } catch (Exception e) {
                 e.printStackTrace();
             }
