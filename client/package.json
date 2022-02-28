@@ -1,0 +1,31 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "rm -rf .next && env-cmd -f .env.dev next dev",
+    "build": "rm -rf out && rm -rf .next && ANALYZE=false env-cmd -f .env.prod next build && next export",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@next/bundle-analyzer": "^12.1.0",
+    "axios": "^0.26.0",
+    "env-cmd": "^10.1.0",
+    "next": "12.1.0",
+    "next-compose-plugins": "^2.2.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-modal": "^3.14.4",
+    "sharp": "^0.30.1",
+    "styled-components": "^5.3.3",
+    "styled-reset": "^4.3.4"
+  },
+  "devDependencies": {
+    "compression-webpack-plugin": "^9.2.0",
+    "eslint": "8.10.0",
+    "eslint-config-next": "12.1.0",
+    "eslint-config-prettier": "^8.4.0",
+    "prettier": "^2.5.1"
+  }
+}
