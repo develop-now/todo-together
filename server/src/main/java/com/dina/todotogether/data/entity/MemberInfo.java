@@ -30,7 +30,7 @@ public class MemberInfo extends BaseTimeEntity {
     @ColumnDefault("true")
     private boolean enabled;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 16)
     private String phone;
 
     @Column(nullable = false, length = 40)
