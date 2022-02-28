@@ -5,6 +5,7 @@ import com.dina.todotogether.data.entity.MemberInfo;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -20,6 +21,7 @@ public class MemberInfoSignUpRequest {
     private String phone;
 
     @NotBlank
+    @Email
     private String backupEmail;
 
     private String originalProfile;
