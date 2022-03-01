@@ -24,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void register(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo) {
+    public Map<String,String> register(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo) {
 
         member.setPassword(passwordEncoder.encode(member.getPassword()));
 
@@ -85,8 +83,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             memberInfo.setOriginalProfile(uploadProfile.getOriginalFilename());
         }
         MemberInfo entityMemberInfo = memberInfo.toEntity(entityUser);
-        MemberInfo saveMemberInfo = memberInfoRepo.save(entityMemberInfo);
+        memberInfoRepo.save(entityMemberInfo);
 
+        Map<String, String> map = new HashMap<>();
+        map.put("email", saveMember.getEmail());
+
+        return map;
     }
 
     @Override

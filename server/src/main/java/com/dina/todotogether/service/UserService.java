@@ -6,8 +6,10 @@ import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.Role;
 
+import java.util.Map;
+
 public interface UserService {
-    public void register(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo);
+    public Map<String, String> register(MemberSignUpRequest member, MemberInfoSignUpRequest memberInfo);
     public Role saveRole(Role role);
     public AllUser getUser(String email);
     public Boolean overlappingCheck(ResisterValidationRequest memberInfo);
