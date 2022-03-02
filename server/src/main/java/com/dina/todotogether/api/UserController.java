@@ -9,14 +9,12 @@ import com.dina.todotogether.data.dto.MemberSignUpRequest;
 import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.Role;
-import com.dina.todotogether.service.S3Service;
 import com.dina.todotogether.service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +32,6 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
-
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -49,11 +46,17 @@ public class UserController {
     }
 
     @PostMapping("/register/overlapping-check")
-    public ResponseEntity overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
+    public ResponseEntity<Map<String, String>> overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
 
             Boolean result = userServiceImpl.overlappingCheck(memberInfo);
+            Map<String, String> data = new HashMap<>();
+            if(result == false) {
+                data.put("overlapping-status", "사용불가");
+            }else {
+                data.put("overlapping-status", "사용가능");
+            }
 
-        return (result==false)?ResponseEntity.status(CONFLICT).body("사용불가"):ResponseEntity.status(OK).body("사용가능");
+        return (result==false)?ResponseEntity.status(CONFLICT).body(data):ResponseEntity.status(OK).body(data);
     }
 
     @GetMapping("/token/refresh")
