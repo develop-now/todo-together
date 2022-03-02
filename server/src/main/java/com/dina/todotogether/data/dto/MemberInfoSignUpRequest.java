@@ -11,17 +11,17 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class MemberInfoSignUpRequest {
 
-    @NotBlank
+    @NotBlank(message = "닉네임은 필수 입력값이며, null이 불가능합니다.")
     private String nickname;
 
-    @NotBlank
+    @NotBlank(message = "이름은 필수 입력값이며, null이 불가능합니다.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "전화번호는 필수 입력값이며, null이 불가능합니다.")
     private String phone;
 
-    @NotBlank
     @Email
+    @NotBlank(message = "backupEmail은 필수 입력값이며, null이 불가능합니다.")
     private String backupEmail;
 
     private String originalProfile;
