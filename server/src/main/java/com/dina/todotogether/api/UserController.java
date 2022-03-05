@@ -9,7 +9,7 @@ import com.dina.todotogether.data.dto.MemberSignUpRequest;
 import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.Role;
-import com.dina.todotogether.service.UserServiceImpl;
+import com.dina.todotogether.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +37,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register (@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) throws Exception {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/register").toUriString());
-        return ResponseEntity.created(uri).body(userServiceImpl.register(member, memberInfo));
+        return ResponseEntity.created(uri).body(userService.register(member, memberInfo));
     }
 
     @PostMapping("/register/overlapping-check")
     public ResponseEntity<Map<String, String>> overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
 
-            Boolean result = userServiceImpl.overlappingCheck(memberInfo);
+            Boolean result = userService.overlappingCheck(memberInfo);
             Map<String, String> data = new HashMap<>();
             if(result == false) {
                 data.put("overlapping-status", "사용불가");
@@ -70,7 +70,7 @@ public class UserController {
                 DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 String email = decodedJWT.getSubject();
                 log.info("email{}", email);
-                AllUser member = userServiceImpl.getUser(email);
+                AllUser member = userService.getUser(email);
                 String access_token = JWT.create()
                         .withSubject(member.getEmail())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 5 * 60 * 1000))
