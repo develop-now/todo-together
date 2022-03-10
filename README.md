@@ -4,6 +4,7 @@ A web project sharing personal goals and managing todo list
 ## 개발환경
 - Window 10
 - Ubuntu 20.04 LTS
+- Nginx 1.18.0
 - GitHub
 - Postman
 - MysqlWorkbench
@@ -28,3 +29,15 @@ A web project sharing personal goals and managing todo list
 
 ### FrontEnd
 - React
+<br/>
+
+## 시스템 구조
+<br/>
+<br/>
+
+![erd](./readmeImg/cloudArchitecture.png)
+<br/>
+<br/>
+
+## ERD 설계
+![aws](./readmeImg/erd.png)
