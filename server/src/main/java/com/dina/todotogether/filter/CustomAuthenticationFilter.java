@@ -2,9 +2,12 @@ package com.dina.todotogether.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.dina.todotogether.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,14 +34,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
 
+    private final CookieUtil cookieUtil = new CookieUtil();
+
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("CustomAuthenticationFilter+++++++++");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         log.info("Email : {}", email); log.info("Password : {}", password);
@@ -72,7 +76,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
+
+        Cookie access_cookie = cookieUtil.createJWTCookie("Access-token", access_token);
+        Cookie refresh_cookie = cookieUtil.createJWTCookie("Refresh-token", refresh_token);
+        response.addCookie(access_cookie);
+        response.addCookie(refresh_cookie);
+
+        Map<String, String> result = new HashMap<>();
+        result.put("result","success");
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+        new ObjectMapper().writeValue(response.getOutputStream(), result);
     }
 }
