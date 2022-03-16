@@ -10,6 +10,7 @@ import com.dina.todotogether.data.dto.ResisterValidationRequest;
 import com.dina.todotogether.data.entity.AllUser;
 import com.dina.todotogether.data.entity.Role;
 import com.dina.todotogether.service.UserService;
+import com.dina.todotogether.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -39,30 +41,32 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    private final CookieUtil cookieUtil = new CookieUtil();
+
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register (@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) throws Exception {
+    public ResponseEntity<Map<String, String>> register(@Valid MemberSignUpRequest member, @Valid MemberInfoSignUpRequest memberInfo) throws Exception {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/register").toUriString());
         return ResponseEntity.created(uri).body(userService.register(member, memberInfo));
     }
 
     @PostMapping("/register/overlapping-check")
-    public ResponseEntity<Map<String, String>> overlappingCheck (@RequestBody ResisterValidationRequest memberInfo) {
+    public ResponseEntity<Map<String, String>> overlappingCheck(@RequestBody ResisterValidationRequest memberInfo) {
 
-            Boolean result = userService.overlappingCheck(memberInfo);
-            Map<String, String> data = new HashMap<>();
-            if(result == false) {
-                data.put("overlapping-status", "사용불가");
-            }else {
-                data.put("overlapping-status", "사용가능");
-            }
+        Boolean result = userService.overlappingCheck(memberInfo);
+        Map<String, String> data = new HashMap<>();
+        if (result == false) {
+            data.put("overlapping-status", "사용불가");
+        } else {
+            data.put("overlapping-status", "사용가능");
+        }
 
-        return (result==false)?ResponseEntity.status(CONFLICT).body(data):ResponseEntity.status(OK).body(data);
+        return (result == false) ? ResponseEntity.status(CONFLICT).body(data) : ResponseEntity.status(OK).body(data);
     }
 
     @GetMapping("/token/refresh")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Map<String, String>> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -77,21 +81,24 @@ public class UserController {
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", member.getRoles().stream().map(Role::getRName).collect(Collectors.toList()))
                         .sign(algorithm);
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("access_token", access_token);
-                tokens.put("refresh_token", refresh_token);
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+
+                Cookie access_cookie = cookieUtil.updateJWTCookie(request, "Access-token", access_token);
+                response.addCookie(access_cookie);
+
+
+                Map<String, String> result = new HashMap<>();
+                result.put("result", "success");
+                result.put("url", request.getServletPath());
+                return ResponseEntity.status(OK).body(result);
+
             } catch (Exception exception) {
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(FORBIDDEN.value());
-                Map<String,String> error = new HashMap<>();
+                Map<String, String> error = new HashMap<>();
                 error.put("error_message", exception.getMessage());
-                response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
+                ResponseEntity.status(FORBIDDEN).body(error);
             }
         } else {
             throw new RuntimeException("refresh token 사용불가.");
         }
+        return null;
     }
 }
